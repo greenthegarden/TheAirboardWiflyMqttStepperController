@@ -10,31 +10,23 @@ const byte FLOAT_DECIMAL_PLACES   = 1;
 const unsigned long STATUS_UPDATE_INTERVAL = 1UL * 60UL * 1000UL;    // x minutes = x * 60 * 1000 miliiseconds
 
 
-/**** Exernal library imports ****/
-
-// The Airboard ()
-#include <TheAirBoard.h>
-
-// MemoryFree (https://github.com/maniacbug/MemoryFree)
-#include <MemoryFree.h>
-
-
-/**** global variable definitions ****/
-
-TheAirBoard board;
+/**** Global Variable Definitions ****/
 
 unsigned long statusPreviousMillis = 0UL;
+
 
 // Macros
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 
-
 /**** Internal imports ****/
+
 #include "networkConfig.h"  // Network configuration
 #include "wiflyConfig.h"    // WiFly configuration
 #include "mqttConfig.h"     // MQTT configuration
 
+#include "theairboardConfig.h"
 #include "stepperConfig.h"  // Stepper configuration
+
 
 #endif  /* THEAIRBOARDWIFLYMQTTSTEPPERCONTROLLER_CONFIG_H_ */

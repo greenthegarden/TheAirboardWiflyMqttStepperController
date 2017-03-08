@@ -15,16 +15,16 @@ const int MQTT_PORT = 1883;
 unsigned long lastReconnectAttempt = 0UL;
 const unsigned long RECONNECTION_ATTEMPT_INTERVAL = 5000UL;
 
-const byte BUFFER_SIZE            = 40;
+const byte BUFFER_SIZE            = 32;
 char topicBuffer[BUFFER_SIZE];
 char payloadBuffer[BUFFER_SIZE];
 
 // callback definition for MQTT
-void mqttcallback(char* topic,
+void callback(char* topic,
               uint8_t* payload,
               unsigned int length);
 
-PubSubClient mqttClient(mqttServerAddr, MQTT_PORT, mqttcallback, wiflyClient);
+PubSubClient mqttClient(mqttServerAddr, MQTT_PORT, callback, wiflyClient);
 
 
 // MQTT topic definitions
@@ -56,37 +56,28 @@ typedef enum {
 
 // status topics
 const char MQTT_STATUS[] PROGMEM = "theairboard/status/mqtt";
-const char VERSION_STATUS[] PROGMEM = "theairboard/status/version";
 const char INTERVAL_STATUS[] PROGMEM = "theairboard/status/interval";
 const char IP_ADDR_STATUS[] PROGMEM = "theairboard/status/ip_addr";
 const char UPTIME_STATUS[] PROGMEM = "theairboard/status/uptime";
-const char MEMORY_STATUS[] PROGMEM = "theairboard/status/memory";
 const char BATTERY_STATUS[] PROGMEM = "theairboard/status/battery";
-const char LED_COLOUR_STATUS[] PROGMEM = "theairboard/status/led_colour";
 const char TEMPERATURE_STATUS[] PROGMEM = "theairboard/status/temperature";
 
 PGM_P const STATUS_TOPICS[] PROGMEM = {
     MQTT_STATUS,          // idx = 0
-    VERSION_STATUS,        // idx = 1
-    INTERVAL_STATUS,         // idx = 2
-    IP_ADDR_STATUS,         // idx = 3
-    UPTIME_STATUS,         // idx = 4
-    MEMORY_STATUS, // idx = 5
-    BATTERY_STATUS,          // idx = 6
-    LED_COLOUR_STATUS,      // idx = 7
-    TEMPERATURE_STATUS,   // idx = 8
+    INTERVAL_STATUS,         // idx = 1
+    IP_ADDR_STATUS,         // idx = 2
+    UPTIME_STATUS,         // idx = 3
+    BATTERY_STATUS,          // idx = 4
+    TEMPERATURE_STATUS,   // idx = 5
 };
 
 typedef enum {
   MQTT_STATUS_IDX = 0,
-  VERSION_STATUS_IDX = 1,
-  INTERVAL_STATUS_IDX = 2,
-  IP_ADDR_STATUS_IDX = 3,
-  UPTIME_STATUS_IDX = 4,
-  MEMORY_STATUS_IDX = 5,
-  BATTERY_STATUS_IDX = 6,
-  LED_COLOUR_STATUS_IDX = 7,
-  TEMPERATURE_STATUS_IDX = 8,
+  INTERVAL_STATUS_IDX = 1,
+  IP_ADDR_STATUS_IDX = 2,
+  UPTIME_STATUS_IDX = 3,
+  BATTERY_STATUS_IDX = 4,
+  TEMPERATURE_STATUS_IDX = 5,
 } status_topics;
 
 
@@ -142,38 +133,10 @@ void publish_uptime() {
   mqttClient.publish(topicBuffer, ltoa(millis(), payloadBuffer, 10));
 }
 
-# if USE_MEMORY_FREE
-void publish_memory() {
-  topicBuffer[0] = '\0';
-  strcpy_P(topicBuffer,
-           (char *)pgm_read_word(&(STATUS_TOPICS[MEMORY_STATUS_IDX])));
-  payloadBuffer[0] = '\0';
-  mqttClient.publish(topicBuffer, itoa(getFreeMemory(), payloadBuffer, 10));
-}
-#endif
+// theairboard function definitions
+void publish_battery();
+void publish_temperature();
 
-void publish_battery() {
-  topicBuffer[0] = '\0';
-  strcpy_P(topicBuffer, (char*)pgm_read_word(&(STATUS_TOPICS[BATTERY_STATUS_IDX])));
-  payloadBuffer[0] = '\0';
-  dtostrf(board.batteryChk(), 1, FLOAT_DECIMAL_PLACES, payloadBuffer);
-  mqttClient.publish(topicBuffer, payloadBuffer);
-}
-
-void publish_led_colour(byte colour_idx) {
-  topicBuffer[0] = '\0';
-  strcpy_P(topicBuffer, (char*)pgm_read_word(&(STATUS_TOPICS[LED_COLOUR_STATUS_IDX])));
-  payloadBuffer[0] = '\0';
-  mqttClient.publish(topicBuffer, itoa(colour_idx, payloadBuffer, 10));
-}
-
-void publish_temperature() {
-  topicBuffer[0] = '\0';
-  strcpy_P(topicBuffer, (char*)pgm_read_word(&(STATUS_TOPICS[TEMPERATURE_STATUS_IDX])));
-  payloadBuffer[0] = '\0';
-  dtostrf(board.getTemp(), 1, FLOAT_DECIMAL_PLACES, payloadBuffer);
-  mqttClient.publish(topicBuffer, payloadBuffer);
-}
 
 void publish_configuration() {
   publish_status_interval();
@@ -185,9 +148,6 @@ void publish_configuration() {
 void publish_status()
 {
   publish_uptime();
-#if USE_MEMORY_FREE
-  publish_memory();
-#endif
   publish_battery();
   publish_temperature();
 }
@@ -203,7 +163,12 @@ boolean mqtt_connect() {
       publish_configuration();
       publish_status();
       // ... and subscribe to topics (should have list)
-      mqttClient.subscribe("theairboard/control/stepper");
+//      mqttClient.subscribe("theairboard/control/stepper");
+      for (byte i = 0; i < ARRAY_SIZE(CONTROL_TOPICS); i++) {
+        topicBuffer[0] = '\0';
+        strcpy_P(topicBuffer, (PGM_P)pgm_read_word(&(CONTROL_TOPICS[i])));
+        mqttClient.subscribe(topicBuffer);
+      }
     }
     return mqttClient.connected();
   }
