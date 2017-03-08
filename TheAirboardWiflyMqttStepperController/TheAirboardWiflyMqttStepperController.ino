@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-void callback(char *topic, uint8_t *payload, unsigned int length) {
+void mqttcallback(char *topic, uint8_t *payload, unsigned int length) {
   // handle message arrived
   /* topic = part of the variable header:has topic name of the topic where the
      publish received
@@ -20,6 +20,8 @@ void callback(char *topic, uint8_t *payload, unsigned int length) {
                      1); // get the size of the bytes and store in memory
   memcpy(message, payload, length * sizeof(char)); // copy the memory
   message[length * sizeof(char)] = '\0'; // add terminating character
+
+  mqttClient.publish("theairboard/debug/topicidx", message);
 
   byte topicIdx = 0;
   boolean controlTopicFound = false;
@@ -39,8 +41,11 @@ void callback(char *topic, uint8_t *payload, unsigned int length) {
     // switch to case statements
     if (topicIdx == STEPPER_SET_MOVE_IDX) { // topic is RELAY_CONTROL
       // message is expected to be an integer
+      mqttClient.publish("theairboard/debug/topicidx", "controlTopicFound");
       byte stepper_set_move_idx = atoi(message);
       if (stepper_set_move_idx > 0) {
+        payloadBuffer[0] = '\0';
+        mqttClient.publish("theairboard/debug/moveidx", itoa(stepper_set_move_idx, payloadBuffer, 10));
         stepper_set_move(stepper_set_move_idx);
       }
     }

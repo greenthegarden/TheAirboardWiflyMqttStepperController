@@ -114,6 +114,7 @@ void stepper_move(double position) {
     stepper.run();
   }
   stepper.stop();
+  publish_stepper_current_position();
 }
 
 void stepper_set_move(int idx) {

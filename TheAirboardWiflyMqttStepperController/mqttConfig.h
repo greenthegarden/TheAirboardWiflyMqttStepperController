@@ -6,7 +6,7 @@
 
 
 // MQTT parameters
-IPAddress mqttServerAddr(192, 168, 1, 20); // emonPi
+IPAddress mqttServerAddr(192, 168, 1, 52); // emonPi
 const char * MQTT_CLIENT_ID = "theairboard";
 const char * MQTT_USERNAME = "emonpi";
 const char * MQTT_PASSWORD = "emonpimqtt2016";
@@ -15,16 +15,16 @@ const int MQTT_PORT = 1883;
 unsigned long lastReconnectAttempt = 0UL;
 const unsigned long RECONNECTION_ATTEMPT_INTERVAL = 5000UL;
 
-const byte BUFFER_SIZE            = 32;
+const byte BUFFER_SIZE            = 40;
 char topicBuffer[BUFFER_SIZE];
 char payloadBuffer[BUFFER_SIZE];
 
 // callback definition for MQTT
-void callback(char* topic,
+void mqttcallback(char* topic,
               uint8_t* payload,
               unsigned int length);
 
-PubSubClient mqttClient(mqttServerAddr, MQTT_PORT, callback, wiflyClient);
+PubSubClient mqttClient(mqttServerAddr, MQTT_PORT, mqttcallback, wiflyClient);
 
 
 // MQTT topic definitions
@@ -203,7 +203,7 @@ boolean mqtt_connect() {
       publish_configuration();
       publish_status();
       // ... and subscribe to topics (should have list)
-      mqttClient.subscribe("theairboard/control/led");
+      mqttClient.subscribe("theairboard/control/stepper");
     }
     return mqttClient.connected();
   }
