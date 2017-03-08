@@ -1,0 +1,11 @@
+#ifndef THEAIRBOARDWIFLYMQTTSTEPPERCONTROLLER_NETWORK_CONFIG_H_
+#define THEAIRBOARDWIFLYMQTTSTEPPERCONTROLLER_NETWORK_CONFIG_H_
+
+
+// Wifi parameters
+const char SSID[]             = "";
+const char PASSPHRASE[]       = "";
+boolean    mode               = true; //or WEP_MODE
+
+
+#endif  /* THEAIRBOARDWIFLYMQTTSTEPPERCONTROLLER_NETWORK_CONFIG_H_ */
