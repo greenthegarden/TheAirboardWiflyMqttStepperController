@@ -18,7 +18,7 @@ Switch    TheAirboardState                   "Connected"                        
 
 Group     gTheAirboardControl
 Number    TheAirboardStepperRequestSwitchIndex
-String    TheAirboardStepperRequestIndex   "[%s]"                                             (gTheAirboard, gTheAirboardControl)  {mqtt=">[emonpi:theairboard/control/led:command:*:default]"}
+String    TheAirboardStepperRequestIndex     "[%s]"                                           (gTheAirboard, gTheAirboardControl)  {mqtt=">[emonpi:theairboard/control/stepper:command:*:default]"}
 
 Group     gTheAirboardStepper
 Number    TheAirboardStepperRequestPosition  "Request Position [%d]"                          (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/request_position:state:default]"}

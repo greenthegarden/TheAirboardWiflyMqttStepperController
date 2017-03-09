@@ -44,6 +44,13 @@ then
 	}
 end
 
+rule "TheAirboard Stepper Request Switch"
+when
+	Item TheAirboardStepperRequestSwitchIndex changed
+then
+	TheAirboardStepperRequestIndex.sendCommand(TheAirboardStepperRequestSwitchIndex.state.toString)
+end
+
 rule "TheAirboard Low Battery Notification"
 when
 	Item TheAirboardStatusBattery changed
@@ -54,9 +61,3 @@ then
     }
 end
 
-rule "TheAirboard LED Colour Change"
-when
-	Item TheAirboardStepperRequestSwitchIndex changed
-then
-	TheAirboardStepperRequestIndex.sendCommand(TheAirboardStepperRequestSwitchIndex.state.toString)
-end
