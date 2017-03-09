@@ -40,8 +40,6 @@ void callback(char *topic, uint8_t *payload, unsigned int length) {
       // message is expected to be an integer
       byte stepper_set_move_idx = atoi(message);
       if (stepper_set_move_idx > 0) {
-        payloadBuffer[0] = '\0';
-        mqttClient.publish("theairboard/debug/moveidx", itoa(stepper_set_move_idx, payloadBuffer, 10));
         stepper_set_move(stepper_set_move_idx);
       }
     }
