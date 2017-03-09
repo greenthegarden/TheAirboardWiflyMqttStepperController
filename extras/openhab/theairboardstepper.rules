@@ -1,0 +1,62 @@
+import org.joda.time.DateTime
+
+val String notificationTo = "greenthegarden@gmail.com"
+val Number lowBatteryThreshold = 4.0
+
+var int theAirboardUpdateAge = 1	// minutes
+
+rule "Last connected timestamp"
+when
+	Item TheAirboardConnectedMessage received update
+then
+	postUpdate(TheAirboardLastConnected, new DateTimeType())
+	postUpdate(TheAirboardLastStatusUpdate, new DateTimeType())
+	TheAirboardState.sendCommand(ON)
+end
+
+rule "Update status interval"
+when
+	Item TheAirboardStatusInterval changed
+then
+	var Number newUpdateAge = TheAirboardStatusInterval.state as DecimalType
+	theAirboardUpdateAge = (newUpdateAge / 60000).intValue	// convert to minutes and update
+end
+
+rule "Status update timestamp"
+when
+	Item TheAirboardUptimeRaw received update
+then
+	var Number uptimeRaw = TheAirboardUptimeRaw.state as DecimalType
+	postUpdate(TheAirboardUptime, (uptimeRaw / 1000).intValue)	// convert from milliseconds to seconds
+	postUpdate(TheAirboardLastStatusUpdate, new DateTimeType())
+end
+
+rule "TheAirboard connected"
+when
+	// update every minute
+	Time cron "0 0/1 * * * ?"
+then
+//	if (RelayshieldLastStatusUpdate.state == Undefined || RelayshieldLastStatusUpdate.state == NULL) {
+	var DateTime dateTime = new DateTime((TheAirboardLastStatusUpdate.state as DateTimeType).calendar.timeInMillis)
+	if (dateTime.plusMinutes(2*theAirboardUpdateAge+1).isBefore(now)) {
+		// is more than <2*updateAge+1> minutes old
+  		TheAirboardState.sendCommand(OFF)
+	}
+end
+
+rule "TheAirboard Low Battery Notification"
+when
+	Item TheAirboardStatusBattery changed
+then
+	var Number BatteryVoltage = TheAirboardBattery.state as Number
+	if (BatteryVoltage < lowBatteryThreshold) {
+      sendNotification(notificationTo, "TheAirboard low battery")
+    }
+end
+
+rule "TheAirboard LED Colour Change"
+when
+	Item TheAirboardStepperRequestSwitchIndex changed
+then
+	TheAirboardStepperRequestIndex.sendCommand(TheAirboardStepperRequestSwitchIndex.state.toString)
+end

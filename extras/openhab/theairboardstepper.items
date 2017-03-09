@@ -1,0 +1,28 @@
+Group     gTheAirboard
+
+// configuration items
+Group     gTheAirboardConfig
+String    TheAirboardConnectedMessage        "Status [%s]"                                    (gTheAirboard, gTheAirboardConfig)   {mqtt="<[emonpi:theairboard/status/mqtt:state:default]"}
+Number    TheAirboardStatusInterval          "Status Interval [%d mSecs]"                     (gTheAirboard, gTheAirboardConfig)   {mqtt="<[emonpi:theairboard/status/interval:state:default]"}
+String    TheAirboardIpAddress               "IP Address [%s]"                                (gTheAirboard, gTheAirboardConfig)   {mqtt="<[emonpi:theairboard/status/ip_addr:state:default]"}
+DateTime  TheAirboardLastConnected           "Last Connected [%1$tT, %1$td.%1$tm.%1$tY]"      (gTheAirboard, gTheAirboardConfig)
+
+// status items
+Group     gTheAirboardStatus
+Number    TheAirboardUptimeRaw               "[%d]"                                           (gTheAirboard, gTheAirboardStatus)   {mqtt="<[emonpi:theairboard/status/uptime:state:default]"}
+Number    TheAirboardUptime                  "Uptime [%d secs]"
+Number    TheAirboardBattery                 "Battery level [%.1f volts]"                     (gTheAirboard, gTheAirboardStatus)   {mqtt="<[emonpi:theairboard/status/battery:state:default]"}
+Number    TheAirboardTemperature             "Temperature [%.1f°C]"                           (gTheAirboard, gTheAirboardStatus)   {mqtt="<[emonpi:theairboard/status/temperature:state:default]"}
+DateTime  TheAirboardLastStatusUpdate        "Last Status Update [%1$tT, %1$td.%1$tm.%1$tY]"  (gTheAirboard, gTheAirboardStatus)
+Switch    TheAirboardState                   "Connected"                                      (gTheAirboard, gTheAirboardStatus)
+
+Group     gTheAirboardControl
+Number    TheAirboardStepperRequestSwitchIndex
+String    TheAirboardStepperRequestIndex   "[%s]"                                             (gTheAirboard, gTheAirboardControl)  {mqtt=">[emonpi:theairboard/control/led:command:*:default]"}
+
+Group     gTheAirboardStepper
+Number    TheAirboardStepperRequestPosition  "Request Position [%d]"                          (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/request_position:state:default]"}
+Number    TheAirboardStepperCurrentPosition  "Current Position [%d]"                          (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/current_position:state:default]"}
+Number    TheAirboardStepperTargetPosition   "Target Position [%d]"                           (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/target_position:state:default]"}
+Number    TheAirboardStepperDistanceToGo     "Distance To Go [%d]"                            (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/distance_to_go:state:default]"}
+Number    TheAirboardStepperSpeed            "Speed [%d]"                                     (gTheAirboard, gTheAirboardStepper)  {mqtt="<[emonpi:stepper/status/speed:state:default]"}
