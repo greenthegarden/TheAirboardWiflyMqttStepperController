@@ -1,7 +1,7 @@
 sitemap theairboardstepper label="Blind Control"
 {
 	Frame label="LED Colour Control" {
-		Switch item=TheAirboardStepperRequestSwitchIndex label="Blind Position" mappings=[1="Closed", 2="25% Open", 3="50% Open", 4="75% Open", 5="Fully Open"]
+		Switch item=TheAirboardStepperRequestSwitchIndex icon="blinds" label="Blind Position" mappings=[1="Closed", 2="25% Open", 3="50% Open", 4="75% Open", 5="Fully Open"]
 	}
 	Frame label="Stepper Status" {
 		Text item=TheAirboardStepperRequestPosition
@@ -10,11 +10,12 @@ sitemap theairboardstepper label="Blind Control"
 		Text item=TheAirboardStepperDistanceToGo		
 	}
 	Frame label="Status" {
+		Switch item=TheAirboardState
+		Text item=TheAirboardLastStatusUpdate icon="calendar"
 		Text item=TheAirboardUptime icon="clock"
 		Text item=TheAirboardTemperature icon="temperature" valuecolor=[>30="red",>20="yellow",<20="green"]
 		Text item=TheAirboardBattery icon="battery" valuecolor=[>3.1="green",>2.7="yellow",<2.7="red"]
-		Text item=TheAirboardLastStatusUpdate icon="calendar"
-		Switch item=TheAirboardState
+		Chart item=TheAirboardBattery service="rrd4j" period=D refresh=6000
 	}
 	Frame label="Configuration" {
 		Text item=TheAirboardLastConnected icon="calendar"
